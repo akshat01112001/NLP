@@ -263,32 +263,6 @@ async def upload_file(file: UploadFile = File(...)):
              }))
 
 
-# @app.post("/profile")
-# async def profile(form_data: UserProfile):
-#     # Check if the username is already taken
-#     db = client.myDatabase["Profile"]
-    
-#     existing_user = db.users.find_one({"username": form_data.username})
-#     print(existing_user)
-#     if existing_user:
-#         filter_criteria = {"username": form_data.username}
-
-#         update_data = {
-#             '$set': {
-#                 "name": form_data.name, "email": form_data.email, "number": form_data.number
-#             }
-#         }
-
-#         db.users.update_one(filter_criteria, update_data)        
-#     else:
-#         # Create a new user
-#         new_user = {"name": form_data.name, "email": form_data.email, "number": form_data.number, "username": form_data.username}
-
-#         db.users.insert_one(new_user)
-
-#     # Return a success message
-#     return {"message": "Profile updated successfully!"}
-
 @app.post("/profile")
 async def profile(form_data: UserProfile):
     try:
@@ -311,11 +285,9 @@ async def profile(form_data: UserProfile):
                     "number": form_data.number
                 }
             }
-
+            
             result = db.users.update_one(filter_criteria, update_data)
-
-            if result.modified_count == 0:
-                raise HTTPException(status_code=500, detail="Failed to update profile")
+            
         else:
             # Create a new user
             new_user = {

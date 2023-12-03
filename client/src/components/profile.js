@@ -3,54 +3,22 @@ import { TextField, Button, Stack } from '@mui/material'
 import File from './file'
 
 const Profile = () => {
-    const [username, setUsername] = useState("")
     const [token, setToken] = useState("")
-    const [data, setData] = useState()
-    const [formData, setFormData] = useState({
-        name: '',
-        email: '',
-        number: '',
-    })
-
-    const handleChange = (field) => (event) => {
-        setFormData({ ...formData, [field]: event.target.value })
-    }
-
-    const handleUsername = async () => {
-        try {
-            const response = await fetch('http://localhost:8000/get_user', {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                },
-            })
-
-            if (response.ok) {
-                const json = await response.json()
-                setUsername(json.sub)
-            }
-        } catch (error) {
-            alert(error.message)
-        }
-    }
+    const [username, setUsername] = useState("")
+    const [name, setName] = useState("")
+    const [email, setEmail] = useState("")
+    const [number, setNumber] = useState("")
 
     const handleSubmit = async (event) => {
         event.preventDefault()
-        await handleUsername()
-
-        const form = new FormData()
-        form.append('name', formData.name)
-        form.append('email', formData.email)
-        form.append('number', formData.number)
-        form.append('username', username)
-
+        
         try {
             const response = await fetch('http://localhost:8000/profile', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(form),
+                body: JSON.stringify({ name, email, number, username, }),
             })
 
             if (response.ok) {
@@ -63,18 +31,36 @@ const Profile = () => {
     }
 
     useEffect(() => {
+        const handleUsername = async () => {
+            try {
+                const response = await fetch('http://localhost:8000/get_user', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                    },
+                })
+
+                if (response.ok) {
+                    const json = await response.json()
+                    setUsername(json.sub)
+                }
+            } catch (error) {
+                alert(error.message)
+            }
+        }
         const storedToken = localStorage.getItem('token')
         if (storedToken) {
             setToken(storedToken)
+            handleUsername()
         }
-    }, [data])
+    }, [token])
 
     return (
         token && (
             <form onSubmit={handleSubmit}>
-                <File setData={setData} />
-                <Stack spacing={2}>
-                    {data && (
+                <File setName={setName} setEmail={setEmail} setNumber={setNumber} />
+                <Stack spacing={10}>
+                    {name && (
                         <div>
                             <TextField
                                 label="Name"
@@ -82,20 +68,22 @@ const Profile = () => {
                                 variant="outlined"
                                 fullWidth
                                 required
-                                // value={formData.name}
-                                defaultValue={data.name}
-                                onChange={handleChange('name')}
+                                value={name}
+                                onChange={(e) => {
+                                    setName(e.target.value)
+                                }}
                             />
                             <TextField
                                 label="Email"
-                                // type="email"
+                                type="email"
                                 name="email"
                                 variant="outlined"
                                 fullWidth
                                 required
-                                // value={formData.email}
-                                defaultValue={data.email[0]}
-                                onChange={handleChange('email')}
+                                value={email}
+                                onChange={(e) => {
+                                    setEmail(e.target.value)
+                                }}
                             />
                             <TextField
                                 label="Phone Number"
@@ -103,23 +91,12 @@ const Profile = () => {
                                 variant="outlined"
                                 fullWidth
                                 required
-                                // value={formData.number}
-                                defaultValue={data.number[0]}
-                                onChange={handleChange('number')}
+                                value={number}
+                                onChange={(e) => {
+                                    setNumber(e.target.value)
+                                }}
                             />
                             <Button type="submit" variant="contained" color="primary">
-                                Submit
-                            </Button>
-                        </div>
-                    )}
-                </Stack>
-                <Stack spacing={2}>
-                    {!data && (
-                        <div>
-                            <TextField label="Name" variant="outlined" fullWidth disabled />
-                            <TextField label="Email" type="email" variant="outlined" fullWidth disabled />
-                            <TextField label="Phone Number" variant="outlined" fullWidth disabled />
-                            <Button type="submit" variant="contained" color="primary" disabled>
                                 Submit
                             </Button>
                         </div>

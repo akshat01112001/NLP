@@ -1,7 +1,7 @@
 import React from 'react'
 import { Input } from '@mui/material'
 
-const FileUpload = ({ setData }) => {
+const FileUpload = ({ setName, setEmail, setNumber }) => {
     const handleFileChange = async (event) => {
         const file = event.target.files[0]
         const formData = new FormData()
@@ -14,8 +14,9 @@ const FileUpload = ({ setData }) => {
 
         if (response.ok) {
             const data = await response.json()
-            setData(data)
-            console.log(data)
+            setName(data.name)
+            setEmail(data.email[0])
+            setNumber(data.number[0])
             alert('Your resume has been uploaded')
         }
     }
