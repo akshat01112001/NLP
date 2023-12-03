@@ -16,7 +16,7 @@ const Dashboard = () => {
     }
 
     const handleLogout = () => {
-        localStorage.setItem('token', '')
+        localStorage.removeItem('token')
         window.location.reload(true)
     }
 
@@ -54,6 +54,9 @@ const Dashboard = () => {
                     style={{ width: '10%' }}
                 >
                     <List>
+                        <ListItem button disabled>
+                            <ListItemText primary="Dashboard" />
+                        </ListItem>
                         <ListItem button onClick={handleProfile}>
                             <ListItemText primary="Profile" />
                         </ListItem>
